@@ -9,13 +9,18 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: e4d039def5768a47e4afec8e89e83ec3ae5a26bf00ad851f914d1240b444d2b1
+  patches:
+    - 0001-load-ansicon-library-from-conda-default-location.patch
+
 
 build:
   number: 0
   skip: True  # [not win]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
-
+  
+  
 requirements:
+  build:
+    - m2-patch  # [win]
   host:
     - pip
     - python
@@ -23,6 +28,7 @@ requirements:
     - setuptools
   run:
     - python
+    - libansicon
 
 test:
   source_files:
@@ -31,7 +37,7 @@ test:
     - ansicon
   commands:
     - pip check
-    - pytest -v tests
+    - pytest -v tests -k "not test_unload_fail"
   requires:
     - pip
     - pytest

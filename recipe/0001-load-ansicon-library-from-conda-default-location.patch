@@ -1,0 +1,55 @@
+From 9ca6adfae76fbbd0ddba02112ec9fdaa9bacdde1 Mon Sep 17 00:00:00 2001
+From: Marek Waszkiewicz <mwaszkiewicz@anaconda.com>
+Date: Wed, 6 Dec 2023 12:45:36 +0100
+Subject: [PATCH] load ansicon library from conda default location
+
+---
+ ansicon/__init__.py | 13 ++-----------
+ setup.py            |  1 -
+ 2 files changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/ansicon/__init__.py b/ansicon/__init__.py
+index a4cb8b0..2b3899e 100644
+--- a/ansicon/__init__.py
++++ b/ansicon/__init__.py
+@@ -22,16 +23,6 @@ KERNEL32.FreeLibrary.argtypes = (wintypes.HANDLE,)
+ KERNEL32.FreeLibrary.restype = wintypes.BOOL
+ 
+ 
+-def _get_dll_path():
+-    """
+-    Determines the path of the ANSICON DLL
+-    """
+-
+-    directory = os.path.dirname(os.path.abspath(__file__))
+-    dll = 'ANSI64.dll' if sys.maxsize > 2**31 else 'ANSI32.dll'
+-    return os.path.join(directory, dll)
+-
+-
+ class _Loader(object):
+     """
+     DLL Loader
+@@ -49,7 +40,7 @@ class _Loader(object):
+         """
+ 
+         if self.dll is None:
+-            self.dll = ctypes.WinDLL(_get_dll_path(), use_last_error=True)
++            self.dll = ctypes.WinDLL("ANSI64.dll", use_last_error=True)
+ 
+     def unload(self):
+         """
+diff --git a/setup.py b/setup.py
+index 5e6afd2..f03e6bc 100644
+--- a/setup.py
++++ b/setup.py
+@@ -40,7 +40,6 @@ setup(
+     install_requires=[],
+     tests_require=[],
+     packages=['ansicon'],
+-    package_data={'ansicon': ['*.dll']},
+     test_suite='tests',
+ 
+     classifiers=[
+-- 
+2.42.0.windows.2
+
