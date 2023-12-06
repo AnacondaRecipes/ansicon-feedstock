@@ -1,7 +1,6 @@
 {% set name = "ansicon" %}
 {% set version = "1.89.0" %}
 
-
 package:
   name: {{ name|lower }}
   version: {{ version }}
@@ -9,35 +8,50 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: e4d039def5768a47e4afec8e89e83ec3ae5a26bf00ad851f914d1240b444d2b1
+  patches:
+    - 0001-load-ansicon-library-from-conda-default-location.patch
 
 build:
-  number: 7
+  number: 0
   skip: True  # [not win]
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv  --no-deps --no-build-isolation --ignore-installed
 
 requirements:
   build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - m2-patch  # [win]
   host:
     - pip
     - python
+    - wheel
+    - setuptools
   run:
     - python
+    - libansicon
 
 test:
+  source_files:
+    - tests
   imports:
     - ansicon
   commands:
     - pip check
+    # skip test_unload_fail because load/unload used the same location 
+    - pytest -v tests -k "not test_unload_fail"
   requires:
     - pip
+    - pytest
 
 about:
   home: https://pypi.org/project/ansicon/
   summary: Python wrapper for loading Jason Hood's ANSICON
+  description: |
+    Ansicon is a Python wrapper for loading Jason Hood's ANSICON which provides ANSI escape sequences for Windows console programs. 
+    It provides much the same functionality as ANSI.SYS does for MS-DOS.
+  license_family: OTHER
   license: MPL-2.0
   license_file: LICENSE
+  dev_url: https://github.com/Rockhopper-Technologies/ansicon/
+  doc_url: https://github.com/Rockhopper-Technologies/ansicon/
 
 extra:
   recipe-maintainers:
