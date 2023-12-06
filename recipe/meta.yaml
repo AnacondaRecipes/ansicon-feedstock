@@ -1,7 +1,6 @@
 {% set name = "ansicon" %}
 {% set version = "1.89.0" %}
 
-
 package:
   name: {{ name|lower }}
   version: {{ version }}
@@ -12,12 +11,11 @@ source:
   patches:
     - 0001-load-ansicon-library-from-conda-default-location.patch
 
-
 build:
   number: 0
   skip: True  # [not win]
-  
-  
+  script: {{ PYTHON }} -m pip install . -vv  --no-deps --no-build-isolation --ignore-installed
+
 requirements:
   build:
     - m2-patch  # [win]
@@ -37,6 +35,7 @@ test:
     - ansicon
   commands:
     - pip check
+    # skip test_unload_fail because load/unload used the same location 
     - pytest -v tests -k "not test_unload_fail"
   requires:
     - pip
