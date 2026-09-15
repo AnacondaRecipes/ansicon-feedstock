@@ -12,13 +12,11 @@ source:
     - 0001-load-ansicon-library-from-conda-default-location.patch
 
 build:
-  number: 0
+  number: 1
   skip: True  # [not win]
   script: {{ PYTHON }} -m pip install . -vv  --no-deps --no-build-isolation --ignore-installed
 
 requirements:
-  build:
-    - m2-patch  # [win]
   host:
     - pip
     - python
